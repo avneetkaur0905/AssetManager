@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Table Data Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        /* Table styles */
+        #dataTable {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        #dataTable th, #dataTable td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #dataTable th {
+            background-color: #f2f2f2;
+        }
+
+        /* Center-align the table */
+        #dataTable {
+            margin: auto;
+        }
+
+        /* Title style */
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Date style */
+        #reportDate {
+            text-align: center;
+            font-size: smaller;
+        }
+    </style>
+</head>
+<body>
+
+<h2>All Assets Report</h2>
+<div id="reportDate"></div>
+
+<table id="dataTable">
+    <thead>
+        <!-- Table headers will be dynamically generated -->
+    </thead>
+    <tbody>
+        <!-- Table rows will be dynamically generated -->
+    </tbody>
+</table>
+
+<script>
+    // Function to get the current date in the format "YYYY-MM-DD"
+    function getCurrentDate() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = (now.getMonth() + 1).toString().padStart(2, '0');
+        var day = now.getDate().toString().padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    $(document).ready(function() {
+        // Set the current date below the report title
+        $('#reportDate').text('Date: ' + getCurrentDate());
+
+        // Make AJAX request to fetch table data
+        $.ajax({
+            url: '../be/getData.jsp',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                // Clear existing table headers and rows
+                $('#dataTable thead').empty();
+                $('#dataTable tbody').empty();
+                
+
+                console.log(data);
+                // Populate table with fetched data
+                if (data.length > 0) {
+                    // Generate table headers from the first object in the data array
+                    var headers = Object.keys(data[0]);
+                    var headerRow = '<tr>';
+                    $.each(headers, function(index, header) {
+                        headerRow += '<th>' + header + '</th>';
+                    });
+                    headerRow += '</tr>';
+                    $('#dataTable thead').append(headerRow);
+
+                    // Generate table rows from all objects in the data array
+                    $.each(data, function(index, item) {
+                        var row = '<tr>';
+                        $.each(item, function(key, value) {
+                            row += '<td>' + value + '</td>';
+                        });
+                        row += '</tr>';
+                        $('#dataTable tbody').append(row);
+                    });
+                } else {
+                    // No data available, display a message or handle as needed
+                    $('#dataTable tbody').append('<tr><td colspan="' + headers.length + '">No data available</td></tr>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching table data:', error);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
