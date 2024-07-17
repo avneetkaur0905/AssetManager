@@ -1,2 +1,3 @@
 This project require SQL Database dump which is in dump folder
 also check the screenshots for SQL Workbench Configration
+this project is done in vs code
